@@ -1,0 +1,6 @@
+{
+  "name": "MindMate Student Wellness",
+  "description": "A comprehensive supportive mental well-being companion for competitive exam aspirants, featuring stress tracking, sleep logs, study metrics, and server-side Gemini AI wellness guidance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

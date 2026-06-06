@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  
+  --color-brand-50: #f5f8ff;
+  --color-brand-100: #ebf1fe;
+  --color-brand-550: #4f6ff6;
+  --color-brand-650: #3b56cf;
+}
+
+/* Sleek Interface: Soft light gradient, high-contrast typography, premium layout rules */
+body {
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 45%, #fff1f2 100%) !important;
+  color: #334155 !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(226, 232, 240, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Glass card styling helpers (fuses standard visual borders and drop shadows) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.82) !important;
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01) !important;
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 35px -10px rgba(99, 102, 241, 0.12) !important;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(99, 102, 241, 0.18) !important;
+  color: #0f172a !important;
+  font-family: var(--font-sans);
+}
+
+.glass-input:focus {
+  background: #ffffff !important;
+  border-color: rgba(99, 102, 241, 0.6) !important;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.15) !important;
+  outline: none;
+}
+
+/* Custom Overrides for dark backgrounds & panels designed for dark mode */
+.bg-zinc-900\/30,
+.bg-slate-900\/30,
+.bg-slate-950\/20,
+.bg-slate-950\/40,
+.bg-zinc-900\/45,
+.bg-slate-900\/40 {
+  background-color: rgba(241, 245, 249, 0.45) !important;
+  border-color: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Animated gradient text theme matching Sleek design */
+.gradient-text {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.soothing-gradient {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 45%, #fff1f2 100%) !important;
+}
+
+/* Global color adaptation rules to resolve low-contrast conditions */
+.text-white {
+  color: #0f172a !important; /* deep slate-900 font direction */
+}
+.text-slate-50 {
+  color: #0f172a !important;
+}
+.text-slate-100 {
+  color: #1e293b !important; /* slate-800 font direction */
+}
+.text-slate-200 {
+  color: #334155 !important; /* slate-700 font direction */
+}
+.text-slate-300 {
+  color: #475569 !important; /* slate-600 font direction */
+}
+.text-slate-400 {
+  color: #64748b !important; /* slate-500 font direction */
+}
+.text-slate-500 {
+  color: #708090 !important;
+}
+
+/* Exception Overrides: Protect colors for active action elements */
+.bg-indigo-600,
+.bg-indigo-600 *,
+.bg-indigo-600.text-white,
+.bg-indigo-500,
+.bg-indigo-500 *,
+.bg-indigo-500.text-white,
+.bg-indigo-650,
+.bg-indigo-650 *,
+.bg-orange-500,
+.bg-orange-500 *,
+.bg-orange-600,
+.bg-orange-600 *,
+.bg-emerald-600,
+.bg-emerald-500,
+.bg-emerald-650,
+.bg-emerald-500.text-white,
+.bg-emerald-500 *,
+.bg-emerald-600 *,
+.bg-red-500,
+.bg-red-500 *,
+.bg-red-650,
+.active-nav-btn,
+.active-nav-btn *,
+button[type="submit"],
+button[type="submit"] *,
+#header-cta,
+#header-cta *,
+#dash-checkin-btn,
+#dash-checkin-btn *,
+#cta-primary,
+#cta-primary * {
+  color: #ffffff !important;
+}
+
+/* Prevent inputs or dropdown options from appearing as dark boxes or blending with dark background definitions */
+select {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+option {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* Text markdown formatting rules */
+.markdown-body {
+  line-height: 1.6;
+}
+.markdown-body p {
+  margin-bottom: 0.75rem;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+.markdown-body ul, .markdown-body ol {
+  margin-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.markdown-body li {
+  margin-bottom: 0.25rem;
+}
