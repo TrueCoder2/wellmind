@@ -10,7 +10,7 @@ const STORAGE_KEYS = {
 
 // Seed records
 const DEFAULT_PROFILE: UserProfile = {
-  name: 'Aayubhi Bhatt',
+  name: 'Sundar Pichai',
   examType: 'UPSC',
   targetYear: '2027',
   dailyStudyGoal: 8,
