@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Sparkles, Send, Trash2, ArrowLeft, Loader2, PlayCircle, HelpCircle, User, Bot, AlertTriangle 
+  Sparkles, Send, Trash2, ArrowLeft, Loader2, PlayCircle, HelpCircle, User, Bot, AlertTriangle, ShieldAlert
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useWellness } from '../context/WellnessContext';
 
 interface CoachProps {
@@ -18,6 +19,7 @@ const SAMPLE_QUESTIONS = [
 export default function Coach({ onNavigate }: CoachProps) {
   const { chatMessages, sendChatMessage, clearChat, loading, userProfile } = useWellness();
   const [inputText, setInputText] = useState('');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
   // Auto scroll down when new messages arrive
@@ -47,18 +49,14 @@ export default function Coach({ onNavigate }: CoachProps) {
       <div className="flex items-center justify-between shrink-0">
         <button 
           onClick={() => onNavigate('dashboard')} 
-          className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-all border border-white/5 bg-slate-900/30 px-3 py-1.5 rounded-xl hover:border-white/15"
+          className="flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-all border border-white/5 bg-slate-900/30 px-3 py-1.5 rounded-xl hover:border-white/15 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Console
         </button>
 
         <button
-          onClick={() => {
-            if (confirm("Reset current exam chat context?")) {
-              clearChat();
-            }
-          }}
-          className="px-3 py-1.5 border border-red-500/10 hover:border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 rounded-xl text-xs font-mono transition-all flex items-center gap-1.5"
+          onClick={() => setShowResetConfirm(true)}
+          className="px-3 py-1.5 border border-red-500/10 hover:border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-500 rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" /> Clear History
         </button>
@@ -168,6 +166,45 @@ export default function Coach({ onNavigate }: CoachProps) {
           <strong>Educational Advisory Only:</strong> MindMate Coach is a customized educational helper script designed around stress relief and cognitive balance workflows. It does not replace psychiatric advice, medication administration, or emergency therapy contacts. If experiencing active crises, please contact official local hotlines immediately.
         </span>
       </div>
+
+      <AnimatePresence>
+        {showResetConfirm && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="reset-chat-title" aria-describedby="reset-chat-desc">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-indigo-100/50 text-left"
+            >
+              <div className="flex items-center gap-3 text-red-600 mb-3">
+                <ShieldAlert className="w-5 h-5 shrink-0" />
+                <h3 id="reset-chat-title" className="font-display font-bold text-lg text-slate-800">Clear chat history?</h3>
+              </div>
+              <p id="reset-chat-desc" className="text-xs text-slate-600 leading-relaxed">
+                This will clear all messages in this session and start a new educational dialogue with your coach.
+              </p>
+              <div className="flex gap-2 justify-end mt-5">
+                <button 
+                  onClick={() => setShowResetConfirm(false)}
+                  autoFocus
+                  className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => {
+                    clearChat();
+                    setShowResetConfirm(false);
+                  }}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-medium cursor-pointer"
+                >
+                  Clear History
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

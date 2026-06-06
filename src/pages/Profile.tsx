@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
-  User, BookOpen, AlertCircle, Save, Check, RefreshCw, Trash2, KeyRound 
+  User, BookOpen, AlertCircle, Save, Check, RefreshCw, Trash2, KeyRound, ShieldAlert 
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useWellness } from '../context/WellnessContext';
 
 interface ProfileProps {
@@ -28,6 +29,8 @@ export default function Profile({ onNavigate }: ProfileProps) {
   const [dailyStudyGoal, setDailyStudyGoal] = useState(userProfile.dailyStudyGoal);
 
   const [saved, setSaved] = useState(false);
+  const [showWipeModal, setShowWipeModal] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,12 +44,11 @@ export default function Profile({ onNavigate }: ProfileProps) {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleHardReset = () => {
-    if (confirm("🚨 CRITICAL ACTION!\nThis will instantly wipe your daily logs, chats, and journals, restoring sample seeds.\n\nType 'CONFIRM' to proceed.")) {
-      resetAll();
-      alert("Application storage was refreshed successfully!");
-      onNavigate('dashboard');
-    }
+  const handleTriggerWipe = () => {
+    resetAll();
+    setShowWipeModal(false);
+    setConfirmText('');
+    onNavigate('dashboard');
   };
 
   return (
@@ -167,21 +169,76 @@ export default function Profile({ onNavigate }: ProfileProps) {
         {/* FACTORY RESET CARD */}
         <div className="glass-panel rounded-3xl p-6 border border-red-500/15 bg-red-500/5 space-y-4">
           <div className="space-y-1.5">
-            <h4 className="font-display font-bold text-red-400 text-sm">Zone of Devastation</h4>
-            <p className="text-xs text-slate-400 leading-normal">
+            <h4 className="font-display font-bold text-red-500 text-sm">Zone of Devastation</h4>
+            <p className="text-xs text-slate-600 leading-normal">
               Hard-purges all recorded diaries, daily checklists, streaks, and settings from local databases, re-establishing blank templates.
             </p>
           </div>
           <button
             type="button"
-            onClick={handleHardReset}
-            className="px-5 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer"
+            onClick={() => setShowWipeModal(true)}
+            className="px-5 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Trash2 className="w-4 h-4" /> Hard Reset Applet Storage
+            <Trash2 className="w-4 h-4 mr-1" /> Hard Reset Applet Storage
           </button>
         </div>
 
       </div>
+
+      <AnimatePresence>
+        {showWipeModal && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="wipe-dialog-title" aria-describedby="wipe-dialog-desc">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-indigo-100/50 text-left"
+            >
+              <div className="flex items-center gap-3 text-red-600 mb-3">
+                <ShieldAlert className="w-5 h-5 shrink-0" />
+                <h3 id="wipe-dialog-title" className="font-display font-bold text-lg text-slate-800">Dangerous Action Warning</h3>
+              </div>
+              <p id="wipe-dialog-desc" className="text-xs text-slate-600 leading-relaxed mb-4">
+                This will irretrievably wipe your custom journaling reflection datasets, study checklist history, and active statistics. 
+                <br /><br />
+                To proceed, type <strong className="font-mono text-red-600 select-all">CONFIRM</strong> in the field below.
+              </p>
+              
+              <div className="space-y-2 mb-4">
+                <label htmlFor="confirm-wipe-input" className="text-[10px] font-mono font-bold text-slate-500 block">VERIFICATION ENTRY</label>
+                <input 
+                  id="confirm-wipe-input"
+                  type="text"
+                  placeholder="CONFIRM"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-mono uppercase bg-slate-50 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                  autoFocus
+                />
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <button 
+                  onClick={() => {
+                    setShowWipeModal(false);
+                    setConfirmText('');
+                  }}
+                  className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleTriggerWipe}
+                  disabled={confirmText !== 'CONFIRM'}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-35 text-white rounded-xl text-xs font-medium transition-all cursor-pointer"
+                >
+                  Wipe & Reseed Console
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, Calendar, BookOpen, PenTool, Trash2, Plus, ArrowLeft, Loader2, RefreshCw, MessageSquare
+  Sparkles, Calendar, BookOpen, PenTool, Trash2, Plus, ArrowLeft, Loader2, RefreshCw, MessageSquare, ShieldAlert
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useWellness } from '../context/WellnessContext';
 
 interface JournalProps {
@@ -19,6 +20,7 @@ export default function Journal({ onNavigate }: JournalProps) {
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
   const [reflectingId, setReflectingId] = useState<string | null>(null);
+  const [journalToDelete, setJournalToDelete] = useState<string | null>(null);
 
   const activeJournal = journals.find(j => j.id === activeId) || null;
 
@@ -49,15 +51,20 @@ export default function Journal({ onNavigate }: JournalProps) {
     }
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirm('Are you absolutely sure you want to delete this diary entry?')) {
-      deleteJournal(id);
-      if (activeId === id) {
-        const remaining = journals.filter(j => j.id !== id);
+  const handleDeleteSelected = () => {
+    if (journalToDelete) {
+      deleteJournal(journalToDelete);
+      if (activeId === journalToDelete) {
+        const remaining = journals.filter(j => j.id !== journalToDelete);
         setActiveId(remaining[0]?.id || null);
       }
+      setJournalToDelete(null);
     }
+  };
+
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setJournalToDelete(id);
   };
 
   const handleTriggerReflection = async (id: string) => {
@@ -323,6 +330,42 @@ export default function Journal({ onNavigate }: JournalProps) {
         </div>
 
       </div>
+
+      <AnimatePresence>
+        {journalToDelete && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="delete-journal-title" aria-describedby="delete-journal-desc">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-indigo-100/50 text-left"
+            >
+              <div className="flex items-center gap-3 text-red-600 mb-3">
+                <ShieldAlert className="w-5 h-5 shrink-0" />
+                <h3 id="delete-journal-title" className="font-display font-bold text-lg text-slate-800">Confirm Deletion</h3>
+              </div>
+              <p id="delete-journal-desc" className="text-xs text-slate-600 leading-relaxed">
+                Are you absolutely sure you want to delete this diary entry? This action is permanent and cannot be undone.
+              </p>
+              <div className="flex gap-2 justify-end mt-5">
+                <button 
+                  onClick={() => setJournalToDelete(null)}
+                  autoFocus
+                  className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleDeleteSelected}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-medium cursor-pointer"
+                >
+                  Delete Entry
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

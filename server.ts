@@ -28,6 +28,23 @@ function getGeminiClient(): GoogleGenAI {
   return geminiClient;
 }
 
+function isQuotaExceededError(error: any): boolean {
+  if (!error) return false;
+  const errMsg = String(error.message || error.stack || error).toLowerCase();
+  return (
+    error.status === "RESOURCE_EXHAUSTED" ||
+    error.statusCode === 429 ||
+    error.code === 429 ||
+    error.status === 429 ||
+    errMsg.includes("quota") ||
+    errMsg.includes("limit exceeded") ||
+    errMsg.includes("429") ||
+    errMsg.includes("resource_exhausted") ||
+    errMsg.includes("rate_limit") ||
+    errMsg.includes("rate limit")
+  );
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -93,7 +110,11 @@ Latest Check-in data: ${checkInStr}`;
       res.json({ success: true, text: response.text });
     } catch (error: any) {
       console.error("Gemini Coach Error:", error);
-      res.status(500).json({ success: false, text: "An error occurred while reaching the AI wellness servers. Please check your connection and try again." });
+      const isQuota = isQuotaExceededError(error);
+      const msgText = isQuota
+        ? "👋 **MindMate Offline Mode**: The AI wellness server is resting after a busy exam season (Gemini API quota rate-limit exceeded).\n\n**A Compassionate Reminder**: Your exam preparation is a marathon, and you are doing your best. Your human value is entirely separate from mock test percentages, syllabus coverage, or the study speed of peers. Close your eyes, practice our 4-4-4-4 **Box Breathing Pacemaker** in the interactive zone, drink a cool glass of water, and return when you are relaxed. Let's talk again soon!"
+        : "👋 **MindMate Compassion Guide (Relay active)**: Our deep learning model is experiencing heavy traffic, but remember: tiny study increments compound beautifully over time. Take a deep, slow trace-breath, rest your mind, and try greeting your coach again in a few moments.";
+      res.json({ success: true, text: msgText });
     }
   });
 
@@ -141,7 +162,11 @@ Ensure your overall remarks are encouraging and take no more than 150-200 words.
       res.json({ success: true, reflection: response.text });
     } catch (error: any) {
       console.error("Gemini Reflection Error:", error);
-      res.status(500).json({ success: false, error: "Unable to process reflection." });
+      const isQuota = isQuotaExceededError(error);
+      const reflectionText = isQuota
+        ? `**Mental Reassurance (Offline Support Mode Enabled)**\n\n*Our server reached its daily Gemini API quota, but articulating your feelings is itself a core cognitive coping strategy.*\n\n**Observations:**\n- You are actively confronting the high cognitive load, syllabus backlog, and mock grade stress of modern competitive exams.\n- Journaling this is a highly healthy, mindful way to vent and process emotional anxiety.\n\n**Coaching Guidance:**\n- Establish a hard textbook/screen cutoff at 10:30 PM tonight to prioritize sleep; deep sleep naturally solidifies your daytime study memory.\n- Frame your preparation in small, bite-sized daylight targets rather than the intimidating full syllabus.\n- Be incredibly kind to yourself today.`
+        : `**Empathetic Reflection (Client Offline Core)**\n\nArticulating your thoughts is active stress release. Although our real-time AI reflection parser is experiencing a temporary busy signal, remember that even 1% consistent daily steps build absolute mastery. Stay steady, take a five-minute stretch, and we'll process your metrics again soon!`;
+      res.json({ success: true, reflection: reflectionText });
     }
   });
 
@@ -183,7 +208,11 @@ Ensure your overall remarks are encouraging and take no more than 150-200 words.
       res.json({ success: true, summary: response.text });
     } catch (error: any) {
       console.error("Gemini Summary Error:", error);
-      res.status(500).json({ success: false, summary: "Failed to generate AI analytics preview this time." });
+      const isQuota = isQuotaExceededError(error);
+      const summaryText = isQuota
+        ? "Your detailed check-in history is securely logged. (Note: AI weekly analytics summary is resting due to Gemini rate limits; maintain a steady study routine and keep stress triggers under 5!)"
+        : "Weekly trends logged successfully. Check back in a few moments for personalized, deep analytical reflections from Gemini!";
+      res.json({ success: true, summary: summaryText });
     }
   });
 
